@@ -1,0 +1,9 @@
+.build/
+*.o
+*.d
+FileShelf.app/
+AppIcon.iconset/
+icon_1024.png
+AppIcon.icns
+.DS_Store
+.claude/
