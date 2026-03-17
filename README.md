@@ -28,14 +28,14 @@ FileShelf lives in your menu bar as a small floating panel. Instead of juggling 
 
 ### Pre-built (easiest)
 
-1. Download `FileShelf.app.zip` from [Releases](../../releases)
+1. Download `FileShelf.app.zip` from [Releases](https://github.com/raihan-ps-se/FileShelf/releases)
 2. Unzip and drag `FileShelf.app` to `/Applications`
 3. Right-click → **Open** → **Open** (bypasses Gatekeeper for unsigned apps)
 
 ### Build from source
 
 ```bash
-git clone https://github.com/your-username/FileShelf.git
+git clone https://github.com/raihan-ps-se/FileShelf.git
 cd FileShelf
 bash build.sh
 ```
