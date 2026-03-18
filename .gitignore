@@ -1,4 +1,6 @@
 .build/
+build_release/
+build_debug/
 *.o
 *.d
 FileShelf.app/
@@ -11,3 +13,5 @@ FileShelf-*.dmg
 FileShelf-rw.dmg
 dmg_staging/
 .claude/
+.swiftpm/
+xcuserdata/

@@ -1,0 +1,36 @@
+name: FileShelf
+options:
+  bundleIdPrefix: com.fileshelf
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: false
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    SWIFT_VERSION: "5.9"
+targets:
+  FileShelf:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/FileShelf
+        excludes:
+          - "Info.plist"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fileshelf.app
+        INFOPLIST_FILE: Sources/FileShelf/Info.plist
+        GENERATE_INFOPLIST_FILE: false
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_NAME: FileShelf
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: true
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+        ENABLE_DEBUG_DYLIB: true
+        OTHER_LDFLAGS:
+          - "-framework"
+          - "ServiceManagement"
+          - "-framework"
+          - "Carbon"
+    dependencies: []
