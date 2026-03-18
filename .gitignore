@@ -7,4 +7,7 @@ icon_1024.png
 AppIcon.icns
 .DS_Store
 FileShelf.app.zip
+FileShelf-*.dmg
+FileShelf-rw.dmg
+dmg_staging/
 .claude/

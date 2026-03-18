@@ -75,12 +75,72 @@ EOF
 # ── Cleanup temp files ────────────────────────────────────────────────────────
 rm -rf "$ICONSET" icon_1024.png
 
-echo "✅ $APP_NAME.app v$VERSION is ready"
+# ── DMG ───────────────────────────────────────────────────────────────────────
+echo "💿 Creating DMG..."
+DMG_NAME="$APP_NAME-$VERSION.dmg"
+VOL_NAME="$APP_NAME $VERSION"
+DMG_TMP="dmg_staging"
+DMG_RW="$APP_NAME-rw.dmg"
+
+rm -rf "$DMG_TMP" "$DMG_NAME" "$DMG_RW"
+mkdir -p "$DMG_TMP"
+cp -r "$BUNDLE" "$DMG_TMP/"
+ln -s /Applications "$DMG_TMP/Applications"
+
+# Create writable image (extra -size ensures hdiutil can mount it immediately)
+hdiutil create \
+    -volname "$VOL_NAME" \
+    -srcfolder "$DMG_TMP" \
+    -ov -format UDRW \
+    -size 10m \
+    -quiet \
+    "$DMG_RW"
+
+# Mount it (no auto-open)
+MOUNT_DIR="/Volumes/$VOL_NAME"
+hdiutil attach "$DMG_RW" -noautoopen -quiet
+sleep 1
+
+# Configure window: size, icon positions, hide toolbar/sidebar
+osascript << APPLESCRIPT
+tell application "Finder"
+  tell disk "$VOL_NAME"
+    open
+    set current view of container window to icon view
+    set toolbar visible of container window to false
+    set statusbar visible of container window to false
+    set the bounds of container window to {200, 120, 740, 460}
+    set viewOptions to the icon view options of container window
+    set arrangement of viewOptions to not arranged
+    set icon size of viewOptions to 120
+    set position of item "FileShelf.app" of container window to {150, 170}
+    set position of item "Applications"  of container window to {390, 170}
+    close
+    open
+    update without registering applications
+    delay 1
+  end tell
+end tell
+APPLESCRIPT
+
+# Unmount and convert to compressed read-only
+hdiutil detach "$MOUNT_DIR" -quiet
+hdiutil convert "$DMG_RW" \
+    -format UDZO \
+    -imagekey zlib-level=9 \
+    -quiet \
+    -o "$DMG_NAME"
+
+rm -rf "$DMG_TMP" "$DMG_RW"
+echo "✅ $DMG_NAME ($(du -sh "$DMG_NAME" | cut -f1))"
+
 echo ""
-echo "   To run:    open $BUNDLE"
-echo "   To install: cp -r $BUNDLE /Applications/"
+echo "   Install: open $DMG_NAME"
+echo "   Release: gh release upload vVERSION $DMG_NAME"
 echo ""
-read -p "Launch now? [y/N] " launch
-if [[ "$launch" =~ ^[Yy]$ ]]; then
-    open "$BUNDLE"
+if [ -t 0 ]; then
+    read -p "Launch app now? [y/N] " launch
+    if [[ "$launch" =~ ^[Yy]$ ]]; then
+        open "$BUNDLE"
+    fi
 fi

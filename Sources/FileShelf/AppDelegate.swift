@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Drag hold state
     private var dragStartTime: Date?
     private var dragTriggered = false
+    private var dragPasteboardChangeCount = 0
 
     // Carbon global hotkey (⌥Space — works without Accessibility permission)
     private var hotKeyRef: EventHotKeyRef?
@@ -162,7 +163,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         add(.flagsChanged) { [weak self] in self?.onFlagsChanged($0) }
 
         // Mouse: drag hold detection (no special permission needed)
-        add(.leftMouseDown)    { [weak self] _ in self?.dragStartTime = nil; self?.dragTriggered = false }
+        add(.leftMouseDown)    { [weak self] _ in
+            self?.dragStartTime = nil
+            self?.dragTriggered = false
+            self?.dragPasteboardChangeCount = NSPasteboard(name: .drag).changeCount
+        }
         add(.leftMouseDragged) { [weak self] _ in self?.onMouseDragged() }
         add(.leftMouseUp)      { [weak self] _ in self?.dragStartTime = nil; self?.dragTriggered = false }
     }
@@ -218,6 +223,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
               let t = dragStartTime,
               Date().timeIntervalSince(t) >= 1.5
         else { return }
+
+        // Only trigger for file drags:
+        // 1. The drag pasteboard must have been updated since mouse-down
+        //    (text selection doesn't update the drag pasteboard)
+        // 2. It must contain file URL types
+        let pb = NSPasteboard(name: .drag)
+        guard pb.changeCount > dragPasteboardChangeCount else { return }
+        let fileTypes: Set<NSPasteboard.PasteboardType> = [
+            .fileURL,
+            NSPasteboard.PasteboardType("NSFilenamesPboardType"),
+        ]
+        guard let pbTypes = pb.types, !Set(pbTypes).isDisjoint(with: fileTypes) else { return }
+
         dragTriggered = true
         DispatchQueue.main.async { [weak self] in self?.shelfWindow.showAnimated() }
     }

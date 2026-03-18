@@ -28,9 +28,14 @@ FileShelf lives in your menu bar as a small floating panel. Instead of juggling 
 
 ### Pre-built (easiest)
 
-1. Download `FileShelf.app.zip` from [Releases](https://github.com/raihan-ps-se/FileShelf/releases)
-2. Unzip and drag `FileShelf.app` to `/Applications`
-3. Right-click → **Open** → **Open** (bypasses Gatekeeper for unsigned apps)
+1. Download `FileShelf-1.0.0.dmg` from [Releases](https://github.com/raihan-ps-se/FileShelf/releases)
+2. Open the DMG and drag **FileShelf** to the **Applications** folder
+3. Right-click → **Open** → **Open** (first launch only, for unsigned apps)
+
+> **"FileShelf is damaged" error?** Run this in Terminal:
+> ```bash
+> xattr -cr /Applications/FileShelf.app
+> ```
 
 ### Build from source
 
@@ -49,7 +54,6 @@ The script builds the binary, generates the app icon, and packages everything in
 | Feature | How |
 |---|---|
 | Show / hide shelf | **⌥Space** (global, no permissions needed) |
-| Add file from clipboard | Hold **⌘C** for 3 seconds |
 | Auto-show on drag | Hold a drag for **1.5 seconds** |
 | Select file + copy to clipboard | Click a file |
 | Multi-select | **⌘+Click** or right-click → Select All |
@@ -69,7 +73,7 @@ The script builds the binary, generates the app icon, and packages everything in
 
 ## Permissions
 
-- **Accessibility** — optional. Enables the Cmd+C hold-to-show trigger. FileShelf will prompt on first launch; you can deny it and everything else still works.
+- **Accessibility** — optional. FileShelf will prompt on first launch; you can deny it and everything else still works.
 - No network access, no file modification, no background processes beyond the app itself.
 
 ---
